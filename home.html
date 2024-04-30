@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <link rel="stylesheet" href="global.css">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tyndall Effect</title>
+    </head>
+
+    <body>
+        <header>
+            <h1>Tyndall Effect</h1>
+            <h4>By Anav Mehta, Helena Su, Jared Basilio, and Ge Jin</h4>
+        </header>
+
+        <section id="abstract">
+            <h2>Abstract</h2>
+            <p>
+                Through this project, our goal was to render the Tyndall Effect by shooting a ray through a volumetrically
+                rendered medium. We approached the problem by first rendering both homogenous and heterogenous fog. We implemented
+                raymarching where we had to account for the probabilities of absorption, scattering, and transmittance for each
+                step. As for heterogenous fog, we implemented a Perlin Noise to vary the densities when traveling through the
+                medium.
+            </p>
+        </section>
+
+        <section id="technical-approach">
+            <h2>Technical Approach</h2>
+            <h3>Homogenous Fog </h3>
+            <!-- We inherited our Project 3s ray tracer code to be the base of our project. Our very initial implementation for
+            homogenous fog described by Goodman included computing a distance based off selecting a uniform number ε &isin;
+            [0, 1] and calculating the time t interpreting it as either a surface or medium intersection. However, we weren't
+            able to get our current ray tracing methods to work with this implementation so we opted for another strategy that was
+            based off raymarching. -->
+
+            <h4>Initial implementation</h4>
+            <p>
+
+                We built upon the ray tracer code from Project 3 as the underlying framework for our project. Initially, our
+                approach to implementing homogenous fog, as suggested by Goodman, involved calculating a distance by selecting a
+                uniform random number, ε, within the range [0, 1]. This value was then used to determine the time, t, which we
+                interpreted as indicating either a surface or medium intersection. However, we encountered difficulties
+                integrating this method with our existing ray tracing code. As a result, we opted for a different strategy based
+                on ray marching.
+            </p>
+
+            <h4>Ray Marching</h4>
+            <p>
+                As we know that rays that pass through a medium lose energy due to absorption and out-scattering and gain energy
+                due to in-scattering. We represent the scattering interaction through &sigma;<sub>s</sub> and the absorption
+                interaction through &sigma;<sub>a</sub>. Beer-Lambert's Law (shown below) gives us the attenuation of the light
+                traveling through some distance d where &sigma;<sub>t</sub> = &sigma;<sub>s</sub> + &sigma;<sub>a</sub>. As we are
+                only dealing with homogenous mediums for now, the density term is constant. Just like how we use BSDFs for surface
+                interactions, for media interactions we use a Phase Function since the outgoing direction can now be scattered in
+                all directions vs just the hemisphere of directions in surface interactions. For isotropic volumes the phase
+                function is simple as We decided to use the
+                Henyey-Greenstein Phase function that is parameterized by
+
+
+
+                The summed up idea behind raymarching is as follows:
+
+
+                For a certain number of steps, we march the ray and for each step we
+                1. Calculate the fraction of light that is not absorbed or out-scattered traveling through the segment of the
+                medium being our set step size
+                2. Update the transmission
+                3. Calculate the in-scattering contribution by sampling the light and calculate the attentuation the light ray
+                travels to the point and update the running total.
+
+
+            </p>
+            <img src="./assets/Beer-Lambert_Law.png">
+        </section>
+
+        <section id="problems-encountered">
+            <h2>Problems Encountered</h2>
+            <p>
+
+            </p>
+        </section>
+
+        <section id="lessons-learned">
+            <h2>Lessons Learned</h2>
+            <p>
+
+            </p>
+        </section>
+
+        <section id="results">
+            <h2>Results</h2>
+            <p>
+
+            </p>
+        </section>
+
+        <section id="references">
+            <h2>References</h2>
+            <ul>
+                <li><a href="#">Reference 1</a></li>
+                <li><a href="#">Reference 2</a></li>
+                <li><a href="#">Reference 3</a></li>
+            </ul>
+        </section>
+
+        <section id="team-contributions">
+            <h2>Contributions from Each Team Member</h2>
+            <ul>
+                <li>Anav Mehta: </li>
+                <li>Helena Su: </li>
+                <li>Jared Basilio: </li>
+                <li>Ge Jin: </li>
+
+            </ul>
+        </section>
+
+    </body>
+
+</html>
