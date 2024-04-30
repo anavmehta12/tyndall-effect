@@ -15,36 +15,49 @@ footer {
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   text-align: center;
-  max-width: 800px;
+  max-width: 1000px;
   margin-left: auto;
   margin-right: auto;
 }
-h1 {
-  color: #5a5a5a;
-}
+
 h2 {
   border-bottom: 2px solid #eeeeee;
   padding-bottom: 10px;
   color: #5a5a5a;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+.formulas {
+  display: flex; /* Uses flexbox to lay out children in a row */
+  justify-content: center; /* Centers items horizontally in the container */
+  align-items: center; /* Aligns items vertically in the center */
+  gap: 20px; /* Adds space between the children */
+}
+figure {
+  margin: 0 10px; /* Adds horizontal margin for spacing, removes vertical margin */
+  flex: 1; /* Allows each figure to grow equally to fill the container */
+  text-align: center; /* Centers the figcaption text */
+}
+img {
+  max-width: 100%; /* Ensures the image is never larger than its container */
+  height: auto; /* Maintains the aspect ratio of the image */
 }
 li {
   padding: 5px 0;
+  text-align: left;
 }
 p {
-  text-align: justify;
+  /* text-align: justify; */
+  text-align: left; /* Aligns text to the left */
 }
-footer p {
-  font-size: 0.8em;
-  color: #666;
+.results {
+  display: flex; /* Use flexbox to lay out images in a row */
+  justify-content: space-around; /* Distributes space evenly around items */
+  align-items: center; /* Aligns items vertically in the center */
+  margin-top: 20px; /* Adds some space above the row */
 }
-a {
-  color: #1a0dab;
-  text-decoration: none;
-}
-a:hover {
-  text-decoration: underline;
+/* Style for each image */
+.results img {
+  width: auto; /* Sets a fixed width for each image */
+  height: 300px; /* Maintains the aspect ratio */
+  margin: 10px; /* Adds space around each image */
+  border-radius: 8px; /* Optional: rounds the corners of each image */
 }

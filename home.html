@@ -6,6 +6,9 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Tyndall Effect</title>
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     </head>
 
     <body>
@@ -19,7 +22,7 @@
             <p>
                 Through this project, our goal was to render the Tyndall Effect by shooting a ray through a volumetrically
                 rendered medium. We approached the problem by first rendering both homogenous and heterogenous fog. We implemented
-                raymarching where we had to account for the probabilities of absorption, scattering, and transmittance for each
+                ray marching where we had to account for the probabilities of absorption, scattering, and transmittance for each
                 step. As for heterogenous fog, we implemented a Perlin Noise to vary the densities when traveling through the
                 medium.
             </p>
@@ -28,13 +31,7 @@
         <section id="technical-approach">
             <h2>Technical Approach</h2>
             <h3>Homogenous Fog </h3>
-            <!-- We inherited our Project 3s ray tracer code to be the base of our project. Our very initial implementation for
-            homogenous fog described by Goodman included computing a distance based off selecting a uniform number ε &isin;
-            [0, 1] and calculating the time t interpreting it as either a surface or medium intersection. However, we weren't
-            able to get our current ray tracing methods to work with this implementation so we opted for another strategy that was
-            based off raymarching. -->
-
-            <h4>Initial implementation</h4>
+            <h4>Initial idea</h4>
             <p>
 
                 We built upon the ray tracer code from Project 3 as the underlying framework for our project. Initially, our
@@ -49,29 +46,64 @@
             <p>
                 As we know that rays that pass through a medium lose energy due to absorption and out-scattering and gain energy
                 due to in-scattering. We represent the scattering interaction through &sigma;<sub>s</sub> and the absorption
-                interaction through &sigma;<sub>a</sub>. Beer-Lambert's Law (shown below) gives us the attenuation of the light
+                interaction through . Beer-Lambert's Law \[T_{r} = {e^{-\sigma_{t}d}}.\] gives us the
+                attenuation of the light
                 traveling through some distance d where &sigma;<sub>t</sub> = &sigma;<sub>s</sub> + &sigma;<sub>a</sub>. As we are
                 only dealing with homogenous mediums for now, the density term is constant. Just like how we use BSDFs for surface
                 interactions, for media interactions we use a Phase Function since the outgoing direction can now be scattered in
                 all directions vs just the hemisphere of directions in surface interactions. For isotropic volumes the phase
-                function is simple as We decided to use the
-                Henyey-Greenstein Phase function that is parameterized by
-
-
-
-                The summed up idea behind raymarching is as follows:
-
-
-                For a certain number of steps, we march the ray and for each step we
-                1. Calculate the fraction of light that is not absorbed or out-scattered traveling through the segment of the
-                medium being our set step size
-                2. Update the transmission
-                3. Calculate the in-scattering contribution by sampling the light and calculate the attentuation the light ray
-                travels to the point and update the running total.
-
-
+                function is simple being 1/4&pi; as it is equally scattered in all directions. However, for anisotropic volumes we
+                use the Henyey-Greenstein Phase function
+                \[p(\theta) = {{1 \over 4\pi}{{1 - g^2} \over [1 + g^2 - 2g*cos(\theta)]^{3/2}}}.\]
+                that is parameterized by an asymmetry factor g controlling back and
+                front scattering.
             </p>
-            <img src="./assets/Beer-Lambert_Law.png">
+            <p>
+                We can finally put together ray marching as follows: <br><br>
+
+                For a certain number of steps, we march the ray's position forward for a chosen step size and for each step we:
+            <ol>
+                <li>Calculate the fraction of light that is not absorbed or out-scattered traveling a segment of the
+                    medium and update the transmission.</li>
+                <li>We sample the light to find the distance to the light and the direction to the light and calculate the
+                    probability we scatter in a certain direction.</li>
+                <li>Calculate the in-scattering contribution by sampling the light and calculate the attenuation the light ray
+                    travels to the point and update the running total of in-scattering light.</li>
+            </ol>
+            </p>
+            <h4>Results</h4>
+            <div class="results">
+                <img src="" alt="">
+            </div>
+
+            <h3>Heterogenous Fog</h3>
+            <p>
+                For Heterogenous fog, the density varies throughout the medium instead of staying constant. To create this density
+                field, we implemented a Perlin Noise function that generates smooth, continuous noise that is useful for
+                simulating natural phenomena such as Fog.
+            </p>
+
+            <h4>Perlin Noise Function</h4>
+            <p>
+                We implemented our Perlin Noise function by initially generating random normalized vectors that correspond to the
+                corners of the 3D cube encompassing each sample point. To increase efficiency and reduce the number of directions
+                generated, we used what's called a permutation table which randomly selects gradients to be at each corner of the
+                cube. This table is accessed via a hash function hashing the (x, y, z) coordinates of the cube's corners. We
+                interpolate between the dot products of the distance vectors—extending from the cube edges to our sample
+                point—and the gradient vectors associated with each corner. This interpolation calculates the final noise
+                value at the sample point, effectively producing the Perlin Noise.
+            </p>
+
+            <h4>Updated Ray Marching</h4>
+            <p>
+                A Heterogenous medium changes our ray marching algorithm since the densities along our light ray vary as it
+                travels through the medium thus our estimation for the in-scattering term is different so we must ray march
+                our light ray. While we march our light ray we accumulate density values along each sample along the ray. We
+                replace our constant density with our Perlin Noise function and sample at each point for both rays.
+            </p>
+            <div class="results">
+
+            </div>
         </section>
 
         <section id="problems-encountered">
@@ -84,12 +116,11 @@
         <section id="lessons-learned">
             <h2>Lessons Learned</h2>
             <p>
-
             </p>
         </section>
 
         <section id="results">
-            <h2>Results</h2>
+            <h2>Video</h2>
             <p>
 
             </p>
@@ -97,17 +128,21 @@
 
         <section id="references">
             <h2>References</h2>
-            <ul>
-                <li><a href="#">Reference 1</a></li>
-                <li><a href="#">Reference 2</a></li>
-                <li><a href="#">Reference 3</a></li>
-            </ul>
+            <ol>
+                <li>
+                    <a
+                        href="https:
+                         //www.scratchapixel.com/lessons/3d-basic-rendering/volume-rendering-for-developers/intro-volume-rendering.html">
+                        https://www.scratchapixel.com/lessons/3d-basic-rendering/volume-rendering-for-developers/intro-volume-rendering.html</a>
+                </li>
+                <li><a href="https://en.wikipedia.org/wiki/Perlin_noise">https://en.wikipedia.org/wiki/Perlin_noise</a></li>
+            </ol>
         </section>
 
         <section id="team-contributions">
             <h2>Contributions from Each Team Member</h2>
             <ul>
-                <li>Anav Mehta: </li>
+                <li>Anav Mehta: Implemented Heterogenous and Homogenous Fog, worked on the website</li>
                 <li>Helena Su: </li>
                 <li>Jared Basilio: </li>
                 <li>Ge Jin: </li>
