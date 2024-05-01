@@ -19,7 +19,6 @@
             <h1>Tyndall Effect</h1>
             <h4>By Anav Mehta, Helena Su, Jared Basilio, and Ge Jin</h4>
         </header>
-
         <section id="abstract">
             <h2>Abstract</h2>
             <p>
@@ -30,60 +29,76 @@
                 medium.
             </p>
         </section>
-
         <section id="technical-approach">
             <h2>Technical Approach</h2>
-            <h3>Homogenous Fog </h3>
+            <h3>Starting Point & Problem Context</h3>
+            <p>
+                Our starting point for this project is the CS 184 Project 3 ray tracer. The starting point includes the ray-scene
+                intersection, acceleration structure, and physically based lighting and materials. While our starting point able
+                to generate realistic images, it lacks of the implementation of spotlight and advanced volumetric rendering
+                techniques that are required to depict phenomena like the Tyndall Effect. To address the issues, we expanded the
+                render's capabilities by including a complex volumetric rendering,
+                implementing both homogenous and heterogeneous fog.
+            </p>
+            <p>
+                The Tyndall Effect is a optical phenomenon where light is scattered by particles that are dispersed in a medium.
+                This effect causes the particles, like dust or droplets, become visible when light shines through them.
+
+                In this project, by focusing on rendering fog and cloud effects, we essentially demonstrate the Tyndall Effect.
+                Fog, consists of tiny water droplets that suspends in airs, will scatter the light passing through them. Rendering
+                fog in various of density provide a clear
+            </p>
+            <h3>Homogenous Fog</h3>
             <h4>Initial idea</h4>
             <p>
-
-                We built upon the ray tracer code from Project 3 as the underlying framework for our project. Initially, our
-                approach to implementing homogenous fog, as suggested by Goodman, involved calculating a distance by selecting a
-                uniform random number, ε, within the range [0, 1]. This value was then used to determine the time, t, which we
-                interpreted as indicating either a surface or medium intersection. However, we encountered difficulties
-                integrating this method with our existing ray tracing code. As a result, we opted for a different strategy based
-                on ray marching.
+                Initially, our approach to implementing homogenous fog, as suggested by Goodman, involved calculating a distance
+                by selecting a uniform random number, ε, within the range [0, 1]. This value was then used to determine the time,
+                t, which we interpreted as indicating either a surface or medium intersection. However, we encountered
+                difficulties integrating this method with our existing ray tracing code. As a result, we opted for a different
+                strategy based on ray marching.
             </p>
-
             <h4>Ray Marching</h4>
             <p>
                 As we know that rays that pass through a medium lose energy due to absorption and out-scattering and gain energy
-                due to in-scattering. We represent the scattering interaction through &sigma;<sub>s</sub> and the absorption
-                interaction through . Beer-Lambert's Law \[T_{r} = {e^{-\sigma_{t}d}}.\] gives us the
-                attenuation of the light
-                traveling through some distance d where &sigma;<sub>t</sub> = &sigma;<sub>s</sub> + &sigma;<sub>a</sub>. As we are
-                only dealing with homogenous mediums for now, the density term is constant. Just like how we use BSDFs for surface
-                interactions, for media interactions we use a Phase Function since the outgoing direction can now be scattered in
-                all directions vs just the hemisphere of directions in surface interactions. For isotropic volumes the phase
-                function is simple being 1/4&pi; as it is equally scattered in all directions. However, for anisotropic volumes we
+                due to in-scattering. We represent the scattering interaction through &sigma;<sub>s</sub>
+                and the absorption interaction through. Beer-Lambert's Law \[T_{r} = {e^{-\sigma_{t}d}}.\] gives us the
+                attenuation of the light traveling through some distance d where \[\sigma_{t} = {\sigma_{a} + \sigma_{s}}.\]As
+                we are only dealing with homogenous mediums for now, the density term is constant. Just like how we use BSDFs for
+                surface interactions, for media interactions we use a Phase Function since the outgoing direction can now be
+                scattered in all directions vs just the hemisphere of directions in surface interactions. For isotropic volumes
+                the phase function is simple being 1/4&pi; as it is equally scattered in all directions. However, for anisotropic
+                volumes we
                 use the Henyey-Greenstein Phase function
                 \[p(\theta) = {{1 \over 4\pi}{{1 - g^2} \over [1 + g^2 - 2g*cos(\theta)]^{3/2}}}.\]
                 that is parameterized by an asymmetry factor g controlling back and
                 front scattering.
             </p>
             <p>
-                We can finally put together ray marching as follows: <br><br>
-
+                We can finally put together ray marching as follows:
+                <br>
+                <br>
                 For a certain number of steps, we march the ray's position forward for a chosen step size and for each step we:
             <ol>
-                <li>Calculate the fraction of light that is not absorbed or out-scattered traveling a segment of the
-                    medium and update the transmission.</li>
-                <li>We sample the light to find the distance to the light and the direction to the light and calculate the
-                    probability we scatter in a certain direction.</li>
-                <li>Calculate the in-scattering contribution by sampling the light and calculate the attenuation the light ray
-                    travels to the point and update the running total of in-scattering light.</li>
+                <li>
+                    Calculate the fraction of light that is not absorbed or out-scattered traveling a segment of the
+                    medium and update the transmission.
+                </li>
+                <li>
+                    We sample the light to find the distance to the light and the direction to the light and calculate the
+                    probability we scatter in a certain direction.
+                </li>
+                <li>
+                    Calculate the in-scattering contribution by sampling the light and calculate the attenuation the light ray
+                    travels to the point and update the running total of in-scattering light.
+                </li>
             </ol>
             </p>
-
-
             <h3>Heterogenous Fog</h3>
             <p>
                 For Heterogenous fog, the density varies throughout the medium instead of staying constant. To create this density
                 field, we implemented a Perlin Noise function that generates smooth, continuous noise that is useful for
                 simulating natural phenomena such as Fog.
             </p>
-
-
             <h4>Perlin Noise Function</h4>
             <p>
                 We implemented our Perlin Noise function by initially generating random normalized vectors that correspond to the
@@ -102,25 +117,22 @@
                 our light ray. While we march our light ray we accumulate density values along each sample along the ray. We
                 replace our constant density with our Perlin Noise function and sample at each point for both rays.
             </p>
-
             <h2>Results</h2>
             <div class="results">
                 <div class="image">
                     <img src="./assets/HomogenousFog1.png">
-                    <code>Homogenous Fog rendering of ./src/dae/CBSpheres.dae </code>
+                    <code>Homogenous Fog rendering of ./src/dae/CBSpheres.dae</code>
                 </div>
-
                 <div class="image">
                     <img src="./assets/HeterogenousFog1.png">
-                    <code>Heterogenous Fog rendering of ./src/dae/CBSpheres.dae </code>
+                    <code>Heterogenous Fog rendering of ./src/dae/CBSpheres.dae</code>
                 </div>
-
             </div>
             <h3>Spot Light Sampling</h3>
             <p>
                 We wanted to create realistic soft light beams through the fog to visualize how light scatters through a medium.
-                To do this we filled in the spotlight constructor and the associated <code>sample_l</code> function. In the
-                <code>sample_l</code>
+                To do this we filled in the spotlight constructor and the associated
+                <code>sample_l</code> function. In the <code>sample_l</code>
                 function, we calculated the distance to the light by calculating the norm of the difference between the light and
                 the object. We got the spot angle
                 by getting the negative dot product of the incoming direction and the direction of the light. If our spot angle is
@@ -130,52 +142,74 @@
                 For our project, the falloff was just a simple cosine falloff. Below is the code:
             </p>
             <div class="results">
+                <div class="image">
+                    <img src="./assets/SpotlightBunny.png">
+                    <code>Spotlight on Bunny</code>
+                </div>
+
+                <div class="image">
+                    <img src="./assets/SpotlightBunnyRedFog.png">
+                    <code>Spotlight on Bunny through Red Fog</code>
+                </div>
 
             </div>
         </section>
-
         <section id="problems-encountered">
             <h2>Problems Encountered</h2>
             <h4>Fog Generation</h4>
             <p>
                 When implementing Heterogenous Fog, we had p
             </p>
-
             <h4>Dae file generation</h4>
             <p>
-                Implementing light beams required new having a new <code>.dae</code> file
+                Implementing light beams required new having a new
+                <code>.dae</code>
+                file
                 that included a new spot light light rather than an area light or a point light. This was easier said than done.
                 Through the Homework 3 Contest Ed Thread, many comments suggested that we hard code our spot light into the
-                <code>.dae</code> file
+                <code>.dae</code>
+                file
                 or did the tedious act of modeling our spotlight in Blender 4+, export to Collada (.dae), import into Blender 2.7,
                 export to Collada Again,
                 then utilize in our renderer. This was very tedious as it required multiple steps to create a singular file. At
                 first, we were unsuccessful
                 as it only showed a black image or an image that was uniformly lit by the spotlight. We eventually found that
                 relative positions for light sources
-                were not maintained when reexported. Therefore, changing the light source at the top of any <code>.dae</code> file
-                in prefix with <i>CB</i> was moved on
+                were not maintained when reexported. Therefore, changing the light source at the top of any
+                <code>.dae</code>
+                file
+                in prefix with
+                <i>CB</i>
+                was moved on
                 above the box, leading to no light emitting within the box hence the black image. Additionally, the already
-                implement <code>.dae</code> files had
+                implement
+                <code>.dae</code>
+                files had
                 a CGL rendering technique for the lights. Initially, this influenced some debug approaches that ultimately didn't
                 work such as hardcoding the spot lights
                 or researching this CGL method described.
             </p>
         </section>
-
         <section id="lessons-learned">
             <h2>Lessons Learned</h2>
+            <p>Understand the underlying math principle first: Debugging the rendering code is hard as there's challenging to
+                trace errors back to their source. For instance, in the creating a spotlight, it's essential to understand the
+                Monte Carlo Integration on the 3D cone shape object. Without a deep understanding of the math involved,
+                identifying the root cause of such problems becomes significantly more complex.
+            </p>
             <p>
             </p>
         </section>
-
         <section id="results">
-            <h2>Video</h2>
-            <p>
-
-            </p>
+            <h2>Presentation Video</h2>
+            <a href="https://youtu.be/--lKMA1KBt4"></a>
+            <p></p>
         </section>
-
+        <section id="Presentation">
+            <a href="https://www.youtube.com/watch?v=--lKMA1KBt4">Presentation Video</a>
+            <a href=" https://docs.google.com/presentation/d/1fdTJ2BFZyDH3qxRIoOQSyJI1OL9O9ytlayWLHRQ2p2w/edit?usp=sharing">Presentation
+                Slides</a>
+        </section>
         <section id="references">
             <h2>References</h2>
             <ol>
@@ -183,23 +217,34 @@
                     <a
                         href="https:
                          //www.scratchapixel.com/lessons/3d-basic-rendering/volume-rendering-for-developers/intro-volume-rendering.html">
-                        https://www.scratchapixel.com/lessons/3d-basic-rendering/volume-rendering-for-developers/intro-volume-rendering.html</a>
+                        https://www.scratchapixel.com/lessons/3d-basic-rendering/volume-rendering-for-developers/intro-volume-rendering.html
+                    </a>
                 </li>
-                <li><a href="https://en.wikipedia.org/wiki/Perlin_noise">https://en.wikipedia.org/wiki/Perlin_noise</a></li>
+                <li>
+                    <a href="https://en.wikipedia.org/wiki/Perlin_noise">https://en.wikipedia.org/wiki/Perlin_noise</a>
+                </li>
+                <li>
+                    <a href="https://inriarhal.scalnce/snnra-00288758i-7
+n">https://inria.hal.science/inria-00288758/en</a>
+                </li>
+
+                <li>
+                    <a href=" https://cseweb.ucsd.edu/~viscomp/classes/cse168/sp20/lectures/168-lecture15.pdf
+                    "> https://cseweb.ucsd.edu/~viscomp/classes/cse168/sp20/lectures/168-lecture15.pdf
+                    </a>
+                </li>
             </ol>
         </section>
-
         <section id="team-contributions">
             <h2>Contributions from Each Team Member</h2>
             <ul>
                 <li>Anav Mehta: Implemented initial Heterogenous and Homogenous Fog code. Implemented Perlin Noise.</li>
-                <li>Helena Su: </li>
-                <li>Jared Basilio: .dae File Generation, Spotlight Approach, HW 3 Source Code</li>
-                <li>Ge Jin: </li>
-
+                <li>Helena Su: Worked on creating the final deliverable being the heterogenous and homogenous cloud through
+                    Rayleigh scattering. </li>
+                <li>Jared Basilio: Worked on .dae File Generation Spotlight Approach, HW 3 Source Code</li>
+                <li>Ge Jin: Worked on implementing homogenous fog and implementing the spotlight generation </li>
             </ul>
         </section>
-
     </body>
 
 </html>
