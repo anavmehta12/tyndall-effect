@@ -8,7 +8,10 @@
         <title>Tyndall Effect</title>
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
         <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet">
     </head>
 
     <body>
@@ -71,10 +74,7 @@
                     travels to the point and update the running total of in-scattering light.</li>
             </ol>
             </p>
-            <h4>Results</h4>
-            <div class="results">
-                <img src="" alt="">
-            </div>
+
 
             <h3>Heterogenous Fog</h3>
             <p>
@@ -82,6 +82,7 @@
                 field, we implemented a Perlin Noise function that generates smooth, continuous noise that is useful for
                 simulating natural phenomena such as Fog.
             </p>
+
 
             <h4>Perlin Noise Function</h4>
             <p>
@@ -101,6 +102,33 @@
                 our light ray. While we march our light ray we accumulate density values along each sample along the ray. We
                 replace our constant density with our Perlin Noise function and sample at each point for both rays.
             </p>
+
+            <h2>Results</h2>
+            <div class="results">
+                <div class="image">
+                    <img src="./assets/HomogenousFog1.png">
+                    <code>Homogenous Fog rendering of ./src/dae/CBSpheres.dae </code>
+                </div>
+
+                <div class="image">
+                    <img src="./assets/HeterogenousFog1.png">
+                    <code>Heterogenous Fog rendering of ./src/dae/CBSpheres.dae </code>
+                </div>
+
+            </div>
+            <h3>Spot Light Sampling</h3>
+            <p>
+                We wanted to create realistic soft light beams through the fog to visualize how light scatters through a medium.
+                To do this we filled in the spotlight constructor and the associated <code>sample_l</code> function. In the
+                <code>sample_l</code>
+                function, we calculated the distance to the light by calculating the norm of the difference between the light and
+                the object. We got the spot angle
+                by getting the negative dot product of the incoming direction and the direction of the light. If our spot angle is
+                within the angle of the light,
+                we can set the probability distribution function to a uniform spherical distribution pdf and return the radiance
+                scaled by some falloff.
+                For our project, the falloff was just a simple cosine falloff. Below is the code:
+            </p>
             <div class="results">
 
             </div>
@@ -108,8 +136,30 @@
 
         <section id="problems-encountered">
             <h2>Problems Encountered</h2>
+            <h4>Fog Generation</h4>
             <p>
+                When implementing Heterogenous Fog, we had p
+            </p>
 
+            <h4>Dae file generation</h4>
+            <p>
+                Implementing light beams required new having a new <code>.dae</code> file
+                that included a new spot light light rather than an area light or a point light. This was easier said than done.
+                Through the Homework 3 Contest Ed Thread, many comments suggested that we hard code our spot light into the
+                <code>.dae</code> file
+                or did the tedious act of modeling our spotlight in Blender 4+, export to Collada (.dae), import into Blender 2.7,
+                export to Collada Again,
+                then utilize in our renderer. This was very tedious as it required multiple steps to create a singular file. At
+                first, we were unsuccessful
+                as it only showed a black image or an image that was uniformly lit by the spotlight. We eventually found that
+                relative positions for light sources
+                were not maintained when reexported. Therefore, changing the light source at the top of any <code>.dae</code> file
+                in prefix with <i>CB</i> was moved on
+                above the box, leading to no light emitting within the box hence the black image. Additionally, the already
+                implement <code>.dae</code> files had
+                a CGL rendering technique for the lights. Initially, this influenced some debug approaches that ultimately didn't
+                work such as hardcoding the spot lights
+                or researching this CGL method described.
             </p>
         </section>
 
@@ -142,9 +192,9 @@
         <section id="team-contributions">
             <h2>Contributions from Each Team Member</h2>
             <ul>
-                <li>Anav Mehta: Implemented Heterogenous and Homogenous Fog, worked on the website</li>
+                <li>Anav Mehta: Implemented initial Heterogenous and Homogenous Fog code. Implemented Perlin Noise.</li>
                 <li>Helena Su: </li>
-                <li>Jared Basilio: </li>
+                <li>Jared Basilio: .dae File Generation, Spotlight Approach, HW 3 Source Code</li>
                 <li>Ge Jin: </li>
 
             </ul>
