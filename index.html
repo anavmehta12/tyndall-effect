@@ -12,6 +12,7 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
             rel="stylesheet">
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     </head>
 
     <body>
@@ -33,7 +34,7 @@
             <h2>Technical Approach</h2>
             <h3>Starting Point & Problem Context</h3>
             <p>
-                Our starting point for this project is the CS 184 Project 3 ray tracer. The starting point includes the ray-scene
+                Our starting point for this project is the CS 184 Project 3 ray tracer. The skeleton code includes the ray-scene
                 intersection, acceleration structure, and physically based lighting and materials. While our starting point able
                 to generate realistic images, it lacks of the implementation of spotlight and advanced volumetric rendering
                 techniques that are required to depict phenomena like the Tyndall Effect. To address the issues, we expanded the
@@ -45,9 +46,7 @@
                 This effect causes the particles, like dust or droplets, become visible when light shines through them.
 
                 In this project, by focusing on rendering fog and cloud effects, we essentially demonstrate the Tyndall Effect.
-                Fog, consists of tiny water droplets that suspends in airs, will scatter the light passing through them. Rendering
-                fog in various of density provide a clear
-            </p>
+                Fog, consists of tiny water droplets that suspends in airs, will scatter the light passing through them.
             <h3>Homogenous Fog</h3>
             <h4>Initial idea</h4>
             <p>
@@ -93,11 +92,31 @@
                 </li>
             </ol>
             </p>
+            <h4>Distance Attenuation Variation</h4>
+
+            <p>by adjusting coefficients and power of the exponential attenuation function, we obtain different levels of radiance
+                fall of in
+                the area near the light. Here is a Desmos graph of different exponential fall of function:</p>
+            <iframe src="https://www.desmos.com/calculator/wlycrs7jbf?embed" width="500" height="500"
+                style="border: 1px solid #ccc" frameborder=0></iframe>
+            <p>which in turn produce the follow different size of radiance fall of (haze area) in the fog near the area light.</p>
+            <div class="image">
+                <img src="./assets/spheres_distance9thpower_focused_noroullete.png">
+                <code>9th power exponential attenuation function</code>
+            </div>
+            <div class="image">
+                <img src="./assets/spheres_distance5thpower_focused.png">
+                <code>5th power exponential attenuation function, big beta</code>
+            </div>
+            <div class="image">
+                <img src="./assets/spheres_distance5thpower.png">
+                <code>5th power exponential attenuation function, small beta</code>
+            </div>
             <h3>Heterogenous Fog</h3>
             <p>
                 For Heterogenous fog, the density varies throughout the medium instead of staying constant. To create this density
                 field, we implemented a Perlin Noise function that generates smooth, continuous noise that is useful for
-                simulating natural phenomena such as Fog.
+                simulating natural phenomena such as Fog. Perlin noise provides a natural variability within the cloud texture.
             </p>
             <h4>Perlin Noise Function</h4>
             <p>
@@ -117,29 +136,84 @@
                 our light ray. While we march our light ray we accumulate density values along each sample along the ray. We
                 replace our constant density with our Perlin Noise function and sample at each point for both rays.
             </p>
+            <h4>Perlin Noise Octave</h4>
+            <p>While Perlin noise are commonly used in generating natural texture, the addition of octaves give clouds the extra
+                furry effect and additional layer of detail and complexity. This method invovles with combining several Perlin
+                Noise
+                function at different frequencies and amplitudes. When generating texture like clouds, using multiple octaves
+                allows
+                for creating more varied patterns. The low frequency Perlin noise provides a broad and main shapes of the cloud.
+                The second and higher octave, on the other hand, provides variation in the cloud's edges and them more
+                natural-looking.
+
+                Here is a nice chart
+                from <a href="https://eev.ee/blog/2016/05/29/perlin-noise/">.</a>
+            <div class="image">
+                <img src="./assets/octave.jpg">
+                <code>octave function</code>
+            </div>
+            <p>Different octaves and persistence values render clouds of different fluffiness:</p>
+            <div class="image">
+                <img src="./assets/boundaryless_cloudish_z0-5_o3_0-7_inroom_better_6000den.png">
+                <code>cloud with 3 octave and 0.7 persistence</code>
+            </div>
+            <div class="image">
+                <img src="./assets/boundaryless_cloudish_z0-5_o4_0-5_inroom_1000den.png">
+                <code>cloud with 4 octave and 0.5 persistence</code>
+            </div>
+            <div class="image">
+                <img src="./assets/boundaryless_cloudish_z0-5_o5_0-7_inroom_1000den.png">
+                <code>cloud with 5 octave and 0.7 persistence</code>
+            </div>
+            <div class="image">
+                <img src="./assets/boundaryless2_cloudish_z0-5_o3_0-7_inroom_better_6000den.png">
+                <code>cloud with 3 octave and 0.7 persistence</code>
+            </div>
+            </p>
+
             <h2>Results</h2>
             <div class="results">
                 <div class="image">
                     <img src="./assets/HomogenousFog1.png">
-                    <code>Homogenous Fog rendering of ./src/dae/CBSpheres.dae</code>
+                    <code>Homogenous Fog rendering of ./dae/sky/CBSpheres.dae</code>
                 </div>
                 <div class="image">
                     <img src="./assets/HeterogenousFog1.png">
-                    <code>Heterogenous Fog rendering of ./src/dae/CBSpheres.dae</code>
+                    <code>Heterogenous Fog rendering of ./dae/sky/CBSpheres.dae</code>
                 </div>
             </div>
             <h3>Spot Light Sampling</h3>
             <p>
-                We wanted to create realistic soft light beams through the fog to visualize how light scatters through a medium.
+                We wanted to create realistic soft light beams through the fog to visualize how light scatters through a
+                medium.
                 To do this we filled in the spotlight constructor and the associated
                 <code>sample_l</code> function. In the <code>sample_l</code>
-                function, we calculated the distance to the light by calculating the norm of the difference between the light and
-                the object. We got the spot angle
-                by getting the negative dot product of the incoming direction and the direction of the light. If our spot angle is
-                within the angle of the light,
-                we can set the probability distribution function to a uniform spherical distribution pdf and return the radiance
-                scaled by some falloff.
-                For our project, the falloff was just a simple cosine falloff. Below is the code:
+                function, the function starts by calculating the vector <code>d</code> which represents the direction from
+                the object to the light source. From here, we use dot product to calculate the angle between light
+                direction and
+                the vector pointing toward the object. We denote the angle as <code>spot_angle</code>
+            </p>
+            <p>
+                If the <code>spot_angle</code>is less than the predefined angle of the spotlight, it indicates the object
+                is
+                within the light's cone and the illumination should be calculated. The <code> falloff </code> is
+                calculated to
+                reflect
+                the reduction of light intensity as the angle increases from the central axis of the spotlight.
+                The solid angle is \( \Omega = 2\pi (1 - \cos(\text{angle})) \)
+
+                The probability distribution function is inversely proportional to the solid angle of the cone, as
+                follows:
+
+                \[ p = \frac{1}{\Omega} = \frac{1}{2\pi (1 - \cos(\text{angle}))} \]
+
+                By adjusting the PDF according to the solid angle, the function ensures the density reflects the physical
+                behavior
+                of a spotlight, where more light is concentrated in a narrow angle. The function will return the light
+                radiance
+                scaled by the falloff. If the object is outside the spotlight's angle, the function returns a zero vector,
+                indicating there's no light contribution, which effective handles objects lying outside the light beam.
+
             </p>
             <div class="results">
                 <div class="image">
@@ -156,10 +230,6 @@
         </section>
         <section id="problems-encountered">
             <h2>Problems Encountered</h2>
-            <h4>Fog Generation</h4>
-            <p>
-                When implementing Heterogenous Fog, we had p
-            </p>
             <h4>Dae file generation</h4>
             <p>
                 Implementing light beams required new having a new
@@ -192,19 +262,21 @@
         </section>
         <section id="lessons-learned">
             <h2>Lessons Learned</h2>
-            <p>Understand the underlying math principle first: Debugging the rendering code is hard as there's challenging to
+            <p>Understand the underlying math principles first: Debugging the rendering code is hard as it is challenging to
                 trace errors back to their source. For instance, in the creating a spotlight, it's essential to understand the
                 Monte Carlo Integration on the 3D cone shape object. Without a deep understanding of the math involved,
                 identifying the root cause of such problems becomes significantly more complex.
             </p>
-            <p>
+            <p> To breakdown a big goal into smaller milestones: it was hard for us to get started on rendering the Tyndall Effect
+                as it involved complicated algorithms. If instead we had just set a series of incremental targets, we could have
+                made this project easier. Initially, we could have focused on understanding the physical principles and math
+                models behind light scattering. Then we could have changed the BSDF to achieve a more realistic effect. Following
+                this, we could have refined our model by incrementally integrating more complex calculations, such as cloud
+                simulation. Each milestone provides us an opportunities to test, optimize, and refine our ideas - helping us to
+                make progress easily.
             </p>
         </section>
-        <section id="results">
-            <h2>Presentation Video</h2>
-            <a href="https://youtu.be/--lKMA1KBt4"></a>
-            <p></p>
-        </section>
+
         <section id="Presentation">
             <a href="https://www.youtube.com/watch?v=--lKMA1KBt4">Presentation Video</a>
             <a href=" https://docs.google.com/presentation/d/1fdTJ2BFZyDH3qxRIoOQSyJI1OL9O9ytlayWLHRQ2p2w/edit?usp=sharing">Presentation
@@ -236,7 +308,7 @@ n">https://inria.hal.science/inria-00288758/en</a>
             </ol>
         </section>
         <section id="team-contributions">
-            <h2>Contributions from Each Team Member</h2>
+            <h2>Contributions</h2>
             <ul>
                 <li>Anav Mehta: Implemented initial Heterogenous and Homogenous Fog code. Implemented Perlin Noise.</li>
                 <li>Helena Su: Worked on creating the final deliverable being the heterogenous and homogenous cloud through
